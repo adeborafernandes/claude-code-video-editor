@@ -214,6 +214,46 @@ Comandos individuais, se quiser invocar uma skill direto em vez de pedir em ling
 - `/hyperframes` — ponto de entrada obrigatório para qualquer criação/edição/render de vídeo com HyperFrames.
 - `/palmier-pro` — quando usar o editor de timeline visual do Palmier Pro em vez das skills de código (só localmente, macOS).
 
+## Exemplos de prompts
+
+Não precisa decorar nome de skill nem seguir um formato especial — pedido em linguagem natural
+já aciona a sequência certa, porque `CLAUDE.md` é lido automaticamente em toda sessão neste repo.
+Mas alguns exemplos ajudam a calibrar o nível de detalhe:
+
+**Primeira vez no projeto:**
+> configura minha identidade nesse projeto antes de eu começar a editar
+
+**Gravação crua, pedido bem genérico (funciona em qualquer sistema):**
+> edita esse vídeo aqui: `raw/VID_20260813_153211.mp4`
+
+> corta as pausas e repetições desse vídeo e me mostra o rascunho do corte antes de renderizar
+
+**Depois do corte, camada visual e legenda:**
+> adiciona um título de abertura com o nome do episódio nesse vídeo
+
+> põe legenda nesse vídeo já cortado
+
+**No Palmier Pro (só macOS, com o app aberto e o projeto carregado):**
+> no Palmier Pro, no projeto "XYZ", tenho um vídeo aberto chamado "ABC" — usa as skills desse
+> repositório pra editar esse vídeo. Segue a sequência do CLAUDE.md e do README antes de tocar na
+> timeline.
+
+Esse último padrão — pedir explicitamente pra seguir a documentação — não é obrigatório (o
+`CLAUDE.md` já carrega sozinho toda sessão), mas é um reforço útil justamente quando o pedido
+envolve o Palmier: com o projeto já aberto na timeline, é mais fácil o Claude ir direto editando
+por lá em vez de checar primeiro se o vídeo carregado é gravação crua — nomear explicitamente
+"segue o CLAUDE.md" reduz esse risco. Ver a seção "Antes de usar as ferramentas de timeline do
+Palmier" em `.agents/skills/palmier-pro/SKILL.md`.
+
+**Montagem final / export:**
+> monta a timeline final no Palmier com o corte e os overlays, e exporta pro Premiere
+
+**Color grading (opcional — só entra se você pedir):**
+> testa um color grading mais quente nesse clipe do Palmier, começando só nesse um clipe
+
+**Dependência faltando:**
+> não consigo rodar isso, acho que falta alguma coisa instalada — me ajuda
+
 ## Atualizar skills
 
 ```bash
