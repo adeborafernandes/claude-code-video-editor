@@ -1,0 +1,18 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "name": "claude-code-video-editor",
+  "version": "0.1.0",
+  "description": "Pipeline de edição de vídeo por código, customizável: corte editorial local a partir de gravação crua (clean-cut, com Whisper + ffmpeg), composição visual e legendas (HyperFrames, Remotion), identidade de marca própria via entrevista (brand-setup), e montagem final opcional numa timeline visual (Palmier Pro).",
+  "keywords": [
+    "video-editing",
+    "video",
+    "captions",
+    "hyperframes",
+    "remotion",
+    "clean-cut",
+    "palmier-pro",
+    "whisper",
+    "ffmpeg",
+    "brand-setup"
+  ]
+}
