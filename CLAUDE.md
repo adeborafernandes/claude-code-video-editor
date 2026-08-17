@@ -4,6 +4,16 @@ Este repo edita vídeo por código: corte editorial local a partir de gravação
 composição visual e legendas (HyperFrames, Remotion), e montagem final opcional numa timeline
 visual (Palmier Pro).
 
+## Dependência ausente (`ffmpeg`, Whisper, Node) — instrua, não apenas falhe
+
+Se um comando falhar por `ffmpeg`/`ffprobe`, backend de Whisper (`openai-whisper` /
+`faster-whisper`) ou Node.js ausente, não pare no erro cru. Detecte o sistema operacional
+(`uname` — Darwin = macOS, Linux, ou pergunte se for ambíguo/Windows) e guie a instalação com o
+gerenciador de pacotes certo: `brew` no macOS, `winget` ou WSL2 no Windows, `apt`/`dnf` no Linux
+— os comandos exatos estão em `README.md` → "Requisitos". Depois de instalar, repita o comando
+que falhou. Lembre também: **Palmier Pro só existe pra macOS (Apple Silicon)** — em Windows/Linux
+não ofereça essa etapa, o pipeline termina no render de `/hyperframes`/`/remotion-create`.
+
 ## Primeira vez rodando este projeto — customize a identidade antes de editar qualquer vídeo
 
 `brand.md` vem como um **template não preenchido** — é assim que este repo sai do clone, de
@@ -63,7 +73,7 @@ Siga esta ordem, pulando só o que não se aplica. Não pule etapas por causa de
 5. **Montagem final opcional**, só quando o Claude Code está rodando localmente num Mac com o
    Palmier Pro aberto (`/palmier-pro`): importar `master.mp4` + os renders dos passos 3/4 como
    mídia, montar a timeline, exportar via XML se for entregar pra outro editor. Color grading só
-   entra se pedido explicitamente — ver a seção "em teste" da skill.
+   entra se pedido explicitamente — ver a seção "Color grading" da skill.
 
 Ver `README.md` para a visão geral do pipeline e o estado atual (o que funciona, o que fica de
 fora, o que falta), e `.agents/skills/` para o conteúdo de cada skill.

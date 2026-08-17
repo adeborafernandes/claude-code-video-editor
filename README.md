@@ -4,10 +4,69 @@ Pipeline de edição de vídeo por código pra criador de conteúdo, pra usar co
 instalada via [`skills`](https://skills.sh), parte escrita pra este repositório. Template: clone,
 customize sua própria identidade, edite seus vídeos.
 
+## Requisitos
+
+Só uma coisa precisa estar instalada **antes** de começar — o resto o próprio Claude te ajuda a
+instalar depois, então não precisa resolver tudo de uma vez:
+
+1. **[Claude Code](https://claude.com/claude-code)** — o CLI em si. Sem ele não tem como rodar
+   nada daqui.
+
+O resto (`ffmpeg`/`ffprobe`, Python + um backend de Whisper, Node.js pro Remotion) o Claude
+percebe que falta assim que você pedir pra editar um vídeo e te guia pela instalação certa pro
+seu sistema — não precisa decorar comando nenhum. Se preferir instalar tudo antes:
+
+<details>
+<summary><b>macOS</b></summary>
+
+```bash
+# Homebrew, se não tiver:
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+
+brew install ffmpeg python node
+pip3 install openai-whisper
+```
+
+**Palmier Pro é exclusivo de macOS** (Apple Silicon, macOS 26 Tahoe+) — é a única etapa do
+pipeline que não roda em outro sistema. Baixe em [palmier.io](https://www.palmier.io/) se quiser
+a montagem final numa timeline visual; sem ele, o pipeline vai até o corte + visuais + legendas
+normalmente.
+</details>
+
+<details>
+<summary><b>Windows</b></summary>
+
+```powershell
+winget install Gyan.FFmpeg Python.Python.3 OpenJS.NodeJS
+pip install openai-whisper
+```
+
+O Claude Code roda melhor via **[WSL2](https://learn.microsoft.com/windows/wsl/install)**
+(Windows Subsystem for Linux) — se estiver no Windows puro (PowerShell/cmd), considere instalar
+o WSL2 primeiro e rodar o Claude Code de dentro dele; os comandos `ffmpeg`/`python`/`whisper`
+acima então rodam dentro do WSL (`apt install ffmpeg python3 python3-pip nodejs npm` em vez do
+`winget`).
+
+**Palmier Pro não existe pra Windows** (app nativo de macOS) — nesse sistema o pipeline vai até
+`/clean-cut` + `/hyperframes`/`/remotion-create` + `/embedded-captions`; a montagem final e o
+export XML ficam de fora, o render do Remotion/HyperFrames já sai como MP4 pronto.
+</details>
+
+<details>
+<summary><b>Linux</b></summary>
+
+```bash
+sudo apt install ffmpeg python3 python3-pip nodejs npm   # Debian/Ubuntu — trocar pro seu gerenciador de pacotes
+pip3 install openai-whisper
+```
+
+Mesma limitação do Windows: sem Palmier Pro (macOS only), o pipeline vai até visuais + legendas.
+</details>
+
 ## Quickstart
 
 ```bash
-git clone <url-deste-repo>
+git clone https://github.com/adeborafernandes/claude-code-video-editor
 cd claude-code-video-editor
 claude
 ```
@@ -17,6 +76,10 @@ e pedir pra rodar `/brand-setup` antes de qualquer coisa — uma entrevista curt
 voz, crenças, tipografia, plataforma) que reescreve `brand.md` com a sua identidade. Depois
 disso, qualquer legenda/hook/título/overlay gerado já sai na sua voz, automaticamente — não
 precisa repetir isso a cada vídeo. Ver `.agents/skills/brand-setup/SKILL.md`.
+
+Se alguma dependência (`ffmpeg`, Whisper, Node) ainda não estiver instalada, o primeiro pedido de
+edição vai esbarrar nisso — é esperado. Só peça pro Claude resolver ("instala o que falta pra
+rodar isso") que ele detecta o sistema operacional e te guia pelos comandos certos.
 
 ## Ferramentas incorporadas
 
