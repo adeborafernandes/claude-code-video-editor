@@ -49,14 +49,19 @@ ferramentas do Palmier simplesmente não aparecem. Isso é esperado, não um err
 ```bash
 # baixar o app
 open https://github.com/palmier-io/palmier-pro/releases/latest/download/PalmierPro.dmg
-
-# depois de instalar e abrir o app uma vez (ele sobe o servidor MCP em 127.0.0.1:19789):
-claude mcp add --transport http palmier-pro http://127.0.0.1:19789/mcp
 ```
 
-Se estiver rodando o Claude Code **dentro deste repositório**, o `.mcp.json` da raiz já registra
-o servidor — não precisa rodar `claude mcp add` de novo, só abrir o Palmier Pro antes de iniciar
-a sessão local.
+Depois de instalar e abrir o app uma vez (ele sobe o servidor MCP local em
+`http://127.0.0.1:19789/mcp`), registre esse servidor no seu agente:
+
+- **Rodando dentro deste repositório**, na maioria dos agentes o servidor já é detectado
+  sozinho: `.mcp.json` (formato Claude Code) e `mcp.json` (formato [Agent
+  Plugins](https://agent-plugins.org/), lido por Codex, Cursor e outros) já estão na raiz. Só
+  abra o Palmier Pro antes de iniciar a sessão local — não precisa registrar nada.
+- **Claude Code**, fora deste repo ou pra confirmar manualmente: `claude mcp add --transport http palmier-pro http://127.0.0.1:19789/mcp`
+- **Outro agente** (Gemini CLI, Codex CLI, Antigravity...): consulte a documentação dele pra
+  registrar um servidor MCP HTTP com a URL acima — o mecanismo muda por ferramenta, mas todas
+  que suportam MCP têm um jeito de apontar pra uma URL local.
 
 ## Antes de usar as ferramentas de timeline do Palmier num projeto já aberto
 

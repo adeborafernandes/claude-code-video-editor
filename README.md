@@ -1,19 +1,48 @@
 # claude-code-video-editor
 
-Pipeline de edição de vídeo por código pra criador de conteúdo, pra usar com Claude Code — parte
-instalada via [`skills`](https://skills.sh), parte escrita pra este repositório. Template: clone,
-customize sua própria identidade, edite seus vídeos.
+Pipeline de edição de vídeo por código pra criador de conteúdo — parte instalada via
+[`skills`](https://skills.sh), parte escrita pra este repositório. Template: clone, customize sua
+própria identidade, edite seus vídeos.
+
+## Funciona com qualquer agente de código
+
+Não é exclusivo de um agente. As skills seguem a [especificação Agent Plugins](https://agent-plugins.org/)
+(`skills/`, `plugin.json`, `mcp.json`), e as instruções operacionais vivem em `AGENTS.md` — o
+[padrão aberto](https://agents.md/) lido
+nativamente por Codex, Cursor, Copilot, Aider, Windsurf e outros. Pra quem usa Claude Code ou
+Gemini CLI, que têm convenção própria de arquivo de contexto (`CLAUDE.md`, `GEMINI.md`), os dois
+apontam pro `AGENTS.md` em vez de duplicar conteúdo — ver "Estrutura" abaixo.
+
+Na prática: qualquer um desses agentes, rodando dentro deste repositório, já sabe a sequência
+operacional e o gate de customização de identidade sem precisar reconfigurar nada. O que muda
+por agente é só o que é específico de plataforma mesmo — por exemplo, o Palmier Pro é MCP e
+funciona em qualquer agente que suporte MCP, mas só existe pra macOS.
 
 ## Requisitos
 
-Só uma coisa precisa estar instalada **antes** de começar — o resto o próprio Claude te ajuda a
-instalar depois, então não precisa resolver tudo de uma vez:
+### 1. Escolha e instale um agente de código
 
-1. **[Claude Code](https://claude.com/claude-code)** — o CLI em si. Sem ele não tem como rodar
-   nada daqui.
+Só isso precisa estar pronto **antes** de começar — o resto (ffmpeg, Python, Whisper, Node) o
+próprio agente te ajuda a instalar depois de aberto neste repositório, então não precisa
+resolver tudo de uma vez. Qualquer um destes serve — este projeto não é exclusivo de nenhum:
 
-O resto (`ffmpeg`/`ffprobe`, Python + um backend de Whisper, Node.js pro Remotion) o Claude
-percebe que falta assim que você pedir pra editar um vídeo e te guia pela instalação certa pro
+| Agente | Como instalar |
+|---|---|
+| **[Claude Code](https://claude.com/claude-code)** (CLI) | `npm install -g @anthropic-ai/claude-code` |
+| **[Gemini CLI](https://geminicli.com/)** (CLI, Google) | `npm install -g @google/gemini-cli` |
+| **[Google Antigravity](https://antigravity.google/)** (IDE, Gemini/Claude/GPT) | baixar em [antigravity.google/download](https://antigravity.google/download) |
+| **[Codex CLI](https://github.com/openai/codex)** (CLI, OpenAI/ChatGPT) | `npm install -g @openai/codex` (macOS: `brew install --cask codex`) |
+| **[Cursor](https://cursor.com/)** (IDE) | baixar em cursor.com — já lê `AGENTS.md` nativamente |
+
+Depois de instalado, abra-o dentro da pasta deste repositório (`claude`, `gemini`, `codex`, ou
+abrir a pasta no Antigravity/Cursor) — o arquivo de contexto certo (`AGENTS.md`, `CLAUDE.md` ou
+`GEMINI.md`, conforme o agente) carrega sozinho. Ver "Funciona com qualquer agente de código"
+acima.
+
+### 2. As dependências do pipeline em si
+
+`ffmpeg`/`ffprobe`, Python + um backend de Whisper, Node.js pro Remotion. O agente percebe que
+falta alguma dessas assim que você pedir pra editar um vídeo e te guia pela instalação certa pro
 seu sistema — não precisa decorar comando nenhum. Se preferir instalar tudo antes:
 
 <details>
@@ -41,11 +70,12 @@ winget install Gyan.FFmpeg Python.Python.3 OpenJS.NodeJS
 pip install openai-whisper
 ```
 
-O Claude Code roda melhor via **[WSL2](https://learn.microsoft.com/windows/wsl/install)**
-(Windows Subsystem for Linux) — se estiver no Windows puro (PowerShell/cmd), considere instalar
-o WSL2 primeiro e rodar o Claude Code de dentro dele; os comandos `ffmpeg`/`python`/`whisper`
-acima então rodam dentro do WSL (`apt install ffmpeg python3 python3-pip nodejs npm` em vez do
-`winget`).
+Agentes de terminal (Claude Code, Gemini CLI, Codex CLI) rodam melhor via
+**[WSL2](https://learn.microsoft.com/windows/wsl/install)** (Windows Subsystem for Linux) —
+se estiver no Windows puro (PowerShell/cmd), considere instalar o WSL2 primeiro e rodar o agente
+de dentro dele; os comandos `ffmpeg`/`python`/`whisper` acima então rodam dentro do WSL
+(`apt install ffmpeg python3 python3-pip nodejs npm` em vez do `winget`). Se preferir um IDE em
+vez de terminal, o Antigravity e o Cursor rodam nativamente no Windows, sem precisar de WSL.
 
 **Palmier Pro não existe pra Windows** (app nativo de macOS) — nesse sistema o pipeline vai até
 `/clean-cut` + `/hyperframes`/`/remotion-create` + `/embedded-captions`; a montagem final e o
@@ -68,17 +98,17 @@ Mesma limitação do Windows: sem Palmier Pro (macOS only), o pipeline vai até 
 ```bash
 git clone https://github.com/adeborafernandes/claude-code-video-editor
 cd claude-code-video-editor
-claude
+claude      # ou: gemini / codex / abrir a pasta no Antigravity ou Cursor
 ```
 
-Na primeira execução, o Claude vai identificar que `brand.md` ainda é um template não preenchido
+Na primeira execução, o agente vai identificar que `brand.md` ainda é um template não preenchido
 e pedir pra rodar `/brand-setup` antes de qualquer coisa — uma entrevista curta (nome, tom de
 voz, crenças, tipografia, plataforma) que reescreve `brand.md` com a sua identidade. Depois
 disso, qualquer legenda/hook/título/overlay gerado já sai na sua voz, automaticamente — não
 precisa repetir isso a cada vídeo. Ver `.agents/skills/brand-setup/SKILL.md`.
 
 Se alguma dependência (`ffmpeg`, Whisper, Node) ainda não estiver instalada, o primeiro pedido de
-edição vai esbarrar nisso — é esperado. Só peça pro Claude resolver ("instala o que falta pra
+edição vai esbarrar nisso — é esperado. Só peça pro agente resolver ("instala o que falta pra
 rodar isso") que ele detecta o sistema operacional e te guia pelos comandos certos.
 
 ## Ferramentas incorporadas
@@ -111,9 +141,9 @@ gravação crua  ──clean-cut──►  master.mp4 + edited-transcript.json
 ```
 
 Todo texto que aparece na tela em qualquer etapa acima (legenda, hook, título, overlay) segue
-`brand.md` — o contrato de tom de voz gerado pela entrevista do `/brand-setup`. `CLAUDE.md` faz
-isso valer automaticamente em qualquer sessão neste repo, sem precisar invocar uma skill separada
-— e bloqueia a edição até `brand.md` ser customizado, se ainda não foi.
+`brand.md` — o contrato de tom de voz gerado pela entrevista do `/brand-setup`. `AGENTS.md` faz
+isso valer automaticamente em qualquer sessão neste repo, com qualquer agente, sem precisar
+invocar uma skill separada — e bloqueia a edição até `brand.md` ser customizado, se ainda não foi.
 
 ## Estado do pipeline
 
@@ -159,7 +189,9 @@ técnico ("pre-sales engineer") saindo transcrito errado. Ver passo 6 em
 - `skills-lock.json` — lockfile gerado pela CLI `skills`, referencia origem e versão das skills **instaladas** (Remotion, HyperFrames). `clean-cut`, `brand-setup` e `palmier-pro` não estão nele por serem escritas à mão neste repo, não puxadas de um pacote externo.
 - `.mcp.json` — configuração de servidor MCP no formato do Claude Code; registra o Palmier Pro (só tem efeito localmente, com o app aberto).
 - `brand.md` — contrato de tom de voz para texto dentro do vídeo (legendas, hooks, títulos, overlays). **Vem como template não preenchido** — gerado de verdade pela entrevista do `/brand-setup` na primeira execução.
-- `CLAUDE.md` — bloqueia a edição de vídeo até `brand.md` ser customizado, e tem a sequência operacional completa (qual skill roda quando) para o Claude Code seguir sozinho.
+- `AGENTS.md` — o arquivo de instruções de verdade: bloqueia a edição de vídeo até `brand.md` ser customizado, e tem a sequência operacional completa (qual skill roda quando). Lido nativamente por Codex, Cursor e outros.
+- `CLAUDE.md` — importa `AGENTS.md` (`@AGENTS.md`) pra valer também no Claude Code, que não lê `AGENTS.md` por padrão.
+- `GEMINI.md` — aponta pro `AGENTS.md` pro Gemini CLI, que lê `GEMINI.md` por padrão em vez de `AGENTS.md`.
 - `plugin.json`, `mcp.json`, `skills/` — este repo empacotado como [Agent Plugin](https://agent-plugins.org/) portável (ver seção abaixo). Aditivo: não substitui nada do que já existia para o Claude Code.
 
 ## Agent Plugin
@@ -185,17 +217,17 @@ funcionam sem precisar reinstalar nada.
 
 ## Uso — sequência do vídeo cru ao pronto
 
-Isso roda **localmente**, com o Claude Code aberto dentro deste repositório (`ffmpeg`/`ffprobe`
-+ um backend de Whisper instalados — ver requisitos em `.agents/skills/clean-cut/SKILL.md`).
-Não precisa decorar a ordem — o `CLAUDE.md` já tem essa sequência escrita pro Claude seguir
-sozinho — mas pra saber o que esperar:
+Isso roda **localmente**, com o seu agente de código (Claude Code, Gemini CLI, Codex, Cursor...)
+aberto dentro deste repositório (`ffmpeg`/`ffprobe` + um backend de Whisper instalados — ver
+requisitos em `.agents/skills/clean-cut/SKILL.md`). Não precisa decorar a ordem — o `AGENTS.md`
+já tem essa sequência escrita pro agente seguir sozinho — mas pra saber o que esperar:
 
-0. **Primeira vez só:** o Claude nota que `brand.md` é um template e pede pra rodar
+0. **Primeira vez só:** o agente nota que `brand.md` é um template e pede pra rodar
    `/brand-setup` — responda a entrevista uma vez, o resto do pipeline usa isso sozinho dali em
    diante.
-1. **Grave o vídeo.** Fora do Claude Code — é só a matéria-prima.
+1. **Grave o vídeo.** Fora do agente — é só a matéria-prima.
 2. **Peça pra editar**, de forma genérica mesmo: *"edita esse vídeo"* / *"corta esse vídeo aqui"*.
-   Se for gravação crua, o Claude reconhece sozinho e roda `/clean-cut`: transcreve, detecta
+   Se for gravação crua, o agente reconhece sozinho e roda `/clean-cut`: transcreve, detecta
    retakes/silêncio, te mostra o rascunho do corte pra você aprovar, corta, verifica, e te mostra
    as palavras suspeitas da legenda pra revisar — **duas pausas pra sua aprovação** nesse meio
    tempo. No final: `work/master.mp4` + `work/edited-transcript.json`.
@@ -216,9 +248,10 @@ Comandos individuais, se quiser invocar uma skill direto em vez de pedir em ling
 
 ## Exemplos de prompts
 
-Não precisa decorar nome de skill nem seguir um formato especial — pedido em linguagem natural
-já aciona a sequência certa, porque `CLAUDE.md` é lido automaticamente em toda sessão neste repo.
-Mas alguns exemplos ajudam a calibrar o nível de detalhe:
+Não precisa decorar nome de skill nem seguir um formato especial — pedido em linguagem natural já
+aciona a sequência certa, porque `AGENTS.md` (via `CLAUDE.md`/`GEMINI.md` conforme o agente) é
+lido automaticamente em toda sessão neste repo. Mas alguns exemplos ajudam a calibrar o nível de
+detalhe:
 
 **Primeira vez no projeto:**
 > configura minha identidade nesse projeto antes de eu começar a editar
@@ -235,15 +268,15 @@ Mas alguns exemplos ajudam a calibrar o nível de detalhe:
 
 **No Palmier Pro (só macOS, com o app aberto e o projeto carregado):**
 > no Palmier Pro, no projeto "XYZ", tenho um vídeo aberto chamado "ABC" — usa as skills desse
-> repositório pra editar esse vídeo. Segue a sequência do CLAUDE.md e do README antes de tocar na
+> repositório pra editar esse vídeo. Segue a sequência do AGENTS.md e do README antes de tocar na
 > timeline.
 
 Esse último padrão — pedir explicitamente pra seguir a documentação — não é obrigatório (o
-`CLAUDE.md` já carrega sozinho toda sessão), mas é um reforço útil justamente quando o pedido
-envolve o Palmier: com o projeto já aberto na timeline, é mais fácil o Claude ir direto editando
-por lá em vez de checar primeiro se o vídeo carregado é gravação crua — nomear explicitamente
-"segue o CLAUDE.md" reduz esse risco. Ver a seção "Antes de usar as ferramentas de timeline do
-Palmier" em `.agents/skills/palmier-pro/SKILL.md`.
+`AGENTS.md` já carrega sozinho toda sessão, em qualquer agente), mas é um reforço útil justamente
+quando o pedido envolve o Palmier: com o projeto já aberto na timeline, é mais fácil o agente ir
+direto editando por lá em vez de checar primeiro se o vídeo carregado é gravação crua — nomear
+explicitamente "segue o AGENTS.md" reduz esse risco. Ver a seção "Antes de usar as ferramentas de
+timeline do Palmier" em `.agents/skills/palmier-pro/SKILL.md`.
 
 **Montagem final / export:**
 > monta a timeline final no Palmier com o corte e os overlays, e exporta pro Premiere
