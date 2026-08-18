@@ -119,6 +119,26 @@ rodar isso") que ele detecta o sistema operacional e te guia pelos comandos cert
 - **`brand-setup`** — entrevista que gera `brand.md`, o contrato de tom de voz/tipografia que toda skill de vídeo aqui lê antes de escrever texto na tela. Escrita para este repo — é o que torna o template customizável em vez de vir com uma identidade fixa embutida.
 - **[Palmier Pro](https://www.palmier.io/)** ([repo](https://github.com/palmier-io/palmier-pro)) — editor de vídeo NLE nativo de macOS (timeline visual, trim, keyframes, color grading, geração de footage com Seedance/Kling/FLUX in-app), controlado por agentes via um servidor MCP local (`http://127.0.0.1:19789/mcp`, registrado em `.mcp.json` na raiz deste repo). **Só funciona rodando localmente num Mac Apple Silicon (macOS 26+) com o app aberto.** Ver `.agents/skills/palmier-pro/SKILL.md` para quando usar em vez das skills de código.
 
+### Narração (voiceover / TTS)
+
+Já vem incluído, via `media-use` (parte do pacote HyperFrames): `npx hyperframes tts "texto" -o narracao.wav`.
+
+- **[Kokoro-82M](https://huggingface.co/hexgrad/Kokoro-82M)** — modelo open source (Apache 2.0),
+  roda **local, sem chave de API, offline**. 54 vozes, várias línguas incluindo português do
+  Brasil (prefixo `p`: `pf_dora`, etc). É o default e o que este projeto recomenda — mesma
+  filosofia do `clean-cut` (Whisper local): zero custo, zero dependência de serviço externo.
+  Requer `espeak-ng` no sistema pra línguas fora do inglês (`brew install espeak-ng` /
+  `apt install espeak-ng`).
+- **HeyGen ou ElevenLabs** (opcional, pago, precisa de API key) — qualidade maior e, no caso do
+  HeyGen, timestamp por palavra na mesma chamada (economiza um passo de transcrição). Só entra
+  se você tiver a chave configurada; sem ela, cai pro Kokoro local automaticamente.
+
+Ver `.agents/skills/media-use/audio/references/tts.md` pra detalhes de vozes, idiomas e ritmo de
+fala. Combina bem com `/faceless-explainer` (vídeo sem gravação de rosto, roteiro narrado do
+zero) e com `/embedded-captions` — gere a narração primeiro, transcreva com `npx hyperframes
+transcribe narracao.wav` pra ter timestamp por palavra (Kokoro não retorna isso sozinho), e use
+o resultado como a legenda sincronizada.
+
 ## Pipeline
 
 ```
@@ -151,7 +171,8 @@ invocar uma skill separada — e bloqueia a edição até `brand.md` ser customi
 
 Customização de identidade na primeira execução (`brand-setup`), corte editorial (`clean-cut`),
 legendas com posicionamento e tipografia definidos por `brand.md` (`embedded-captions`), motion
-graphics/overlays/títulos (`hyperframes`, `remotion-*`), mixagem de áudio/SFX/música
+graphics/overlays/títulos (`hyperframes`, `remotion-*`), **narração/voiceover local e open
+source via Kokoro-82M** (`media-use`, ver acima), mixagem de áudio/SFX/música
 (`hyperframes-audio`, `media-use`), transições (`motion-doctrine`, `cut-the-curve`,
 `seam-craft`), revisão de transcrição antes de queimar legenda (`clean-cut/scripts/flag_transcript.py`,
 ver abaixo), e montagem final numa timeline visual com export pra outros editores (Palmier Pro,
